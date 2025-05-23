@@ -1,7 +1,7 @@
 # GitHub Deployer (Standalone)
 
-This repository includes a small script for deploying GitHub repositories to
-folders on your server without WordPress.
+This repository includes a simple script for deploying GitHub repositories to
+folders on your server.
 
 ## Configuration
 
