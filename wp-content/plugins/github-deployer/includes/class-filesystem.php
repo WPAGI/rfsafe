@@ -63,13 +63,39 @@ return empty( $files );
  *
  * @return bool
  */
-public function unzip( $zip_file, $destination, $overwrite = false ) {
-$unzip_result = unzip_file( $zip_file, $destination, $overwrite );
+    public function unzip( $zip_file, $destination, $overwrite = false ) {
+        $unzip_result = unzip_file( $zip_file, $destination, $overwrite );
 
 if ( is_wp_error( $unzip_result ) ) {
 return false;
 }
 
-return true;
-}
+        return true;
+    }
+
+    /**
+     * List sub directories of a path.
+     *
+     * @param string $path Path to list.
+     *
+     * @return array
+     */
+    public function list_folders( $path ) {
+        $dirs   = $this->fs->dirlist( $path );
+        $result = array();
+
+        if ( is_array( $dirs ) ) {
+            foreach ( $dirs as $name => $info ) {
+                if ( 'd' === $info['type'] ) {
+                    $full = ( '/' === $path ) ? '/' . $name : trailingslashit( $path ) . $name;
+                    $result[] = array(
+                        'name' => $name,
+                        'path' => $full,
+                    );
+                }
+            }
+        }
+
+        return $result;
+    }
 }
