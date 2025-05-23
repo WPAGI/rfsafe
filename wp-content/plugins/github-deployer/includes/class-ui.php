@@ -25,10 +25,11 @@ public function __construct( $plugin ) {
 $this->plugin = $plugin;
 add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 add_action( 'admin_post_gd_save_token', array( $this, 'save_token' ) );
-add_action( 'admin_post_gd_save_mapping', array( $this, 'save_mapping' ) );
-add_action( 'admin_post_gd_deploy_repo', array( $this, 'deploy_repo' ) );
-add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
-}
+        add_action( 'admin_post_gd_save_mapping', array( $this, 'save_mapping' ) );
+        add_action( 'admin_post_gd_deploy_repo', array( $this, 'deploy_repo' ) );
+        add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+        add_action( 'wp_ajax_gd_browse_dir', array( $this, 'ajax_browse_dir' ) );
+    }
 
 /**
  * Enqueue admin assets.
@@ -116,8 +117,8 @@ exit;
 /**
  * Deploy repository.
  */
-public function deploy_repo() {
-$repo   = sanitize_text_field( $_GET['repo'] );
+    public function deploy_repo() {
+        $repo   = sanitize_text_field( $_GET['repo'] );
 $mappings = get_option( 'gd_repo_mappings', array() );
 
 if ( empty( $mappings[ $repo ] ) ) {
@@ -148,7 +149,28 @@ $message = 'Download failed.';
 
 $this->plugin->logger->log( $repo, 'default', $folder, $success, $message );
 
-wp_redirect( admin_url( 'tools.php?page=github-deployer' ) );
-exit;
-}
+        wp_redirect( admin_url( 'tools.php?page=github-deployer' ) );
+        exit;
+    }
+
+    /**
+     * AJAX handler to browse directories.
+     */
+    public function ajax_browse_dir() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( 'Unauthorized', 403 );
+        }
+
+        $path = isset( $_GET['path'] ) ? sanitize_text_field( wp_unslash( $_GET['path'] ) ) : '/';
+        if ( '' === $path ) {
+            $path = '/';
+        }
+
+        $folders = $this->plugin->filesystem->list_folders( $path );
+
+        wp_send_json_success( array(
+            'path'    => $path,
+            'folders' => $folders,
+        ) );
+    }
 }
