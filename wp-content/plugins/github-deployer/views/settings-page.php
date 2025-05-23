@@ -33,6 +33,7 @@
 <input type="hidden" name="action" value="gd_save_mapping" />
 <input type="hidden" name="repo" value="<?php echo esc_attr( $full ); ?>" />
 <input type="text" name="folder" value="<?php echo esc_attr( isset( $mappings[ $full ] ) ? $mappings[ $full ] : '' ); ?>" class="regular-text" />
+<button type="button" class="button gd-find-folder" style="margin-left:4px;">Find Folder...</button>
 <input type="submit" class="button" value="Save Mapping" />
 </form>
 </td>
@@ -74,4 +75,5 @@ Set folder first
 <?php endif; ?>
 </tbody>
 </table>
+<div id="gd-folder-modal" style="display:none;"></div>
 </div>
